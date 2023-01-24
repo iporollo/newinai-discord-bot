@@ -1,0 +1,15 @@
+{
+  "name": "newinai-discord",
+  "version": "1.0.0",
+  "description": "New In AI Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "iporollo",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3"
+  }
+}
