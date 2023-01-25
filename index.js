@@ -28,7 +28,7 @@ client.on(Events.ClientReady, () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on(Events.MessageReactionAdd, async (reaction) => {
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
   // When a reaction is received, check if the structure is partial
   if (reaction.partial) {
     // If the message this reaction belongs to was removed, the fetching might result in an API error which should be handled
@@ -41,12 +41,11 @@ client.on(Events.MessageReactionAdd, async (reaction) => {
     }
   }
 
-  console.log('reaction', reaction);
-
   const emoji = reaction.emoji.name;
-  const emojiCount = reaction.count;
-  const emojiAuthor = reaction.message.author.username;
-  if (emoji === '📰' && emojiCount === 1 && emojiAuthor === 'iporollo') {
+  const emojiAuthor = user.username;
+
+  if (emoji === '📰' && emojiAuthor === 'iporollo') {
+    console.log('reaction', reaction);
     if (reaction.message.embeds?.length > 0) {
       reaction.message.embeds.forEach((embed) => {
         saveEmbedToAirtable(airtableBase, embed);
