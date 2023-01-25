@@ -9,6 +9,7 @@
   "author": "iporollo",
   "license": "MIT",
   "dependencies": {
+    "airtable": "^0.11.6",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3"
   }
