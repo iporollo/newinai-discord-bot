@@ -40,8 +40,13 @@ client.on(Events.MessageReactionAdd, async (reaction) => {
       return;
     }
   }
+
+  console.log('reaction', reaction);
+
   const emoji = reaction.emoji.name;
-  if (emoji === '📰') {
+  const emojiCount = reaction.count;
+  const emojiAuthor = reaction.message.author.username;
+  if (emoji === '📰' && emojiCount === 1 && emojiAuthor === 'iporollo') {
     if (reaction.message.embeds?.length > 0) {
       reaction.message.embeds.forEach((embed) => {
         saveEmbedToAirtable(airtableBase, embed);
