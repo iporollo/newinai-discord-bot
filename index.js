@@ -4,6 +4,7 @@ const {
   extractLinks,
   saveEmbedToAirtable,
   saveLinkToAirtable,
+  getLastAirtableLink,
 } = require('./utils');
 require('dotenv').config();
 
@@ -43,16 +44,23 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 
   const emoji = reaction.emoji.name;
   const emojiAuthor = user.username;
-
   if (emoji === '📰' && emojiAuthor === 'iporollo') {
-    console.log('reaction', reaction);
+    let lastRecordLink = '';
+    const recordsResult = await getLastAirtableLink(airtableBase);
+    if (recordsResult?.length > 0) {
+      lastRecordLink = recordsResult[0].get('Link');
+    }
     if (reaction.message.embeds?.length > 0) {
-      reaction.message.embeds.forEach((embed) => {
-        saveEmbedToAirtable(airtableBase, embed);
+      reaction.message.embeds.forEach(async (embed) => {
+        if (!lastRecordLink || lastRecordLink !== embed.link) {
+          await saveEmbedToAirtable(airtableBase, embed);
+        }
       });
     } else {
-      extractLinks(reaction.message.content).forEach((link) => {
-        saveLinkToAirtable(airtableBase, link);
+      extractLinks(reaction.message.content).forEach(async (link) => {
+        if (!lastRecordLink || lastRecordLink !== link) {
+          await saveLinkToAirtable(airtableBase, link);
+        }
       });
     }
   }
