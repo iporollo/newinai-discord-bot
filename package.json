@@ -11,6 +11,7 @@
   "dependencies": {
     "airtable": "^0.11.6",
     "discord.js": "^14.7.1",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "link-preview-js": "^3.0.4"
   }
 }
