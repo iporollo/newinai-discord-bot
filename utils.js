@@ -27,37 +27,14 @@ async function getLastAirtableLink(airtableBase) {
   });
 }
 
-async function saveEmbedToAirtable(airtableBase, embed) {
+async function saveLinkToAirtable(airtableBase, url, description) {
   return new Promise((resolve, reject) => {
     airtableBase(process.env.AIRTABLE_LINK_AGGRETOR_TABLE_ID).create(
       [
         {
           fields: {
-            Link: embed.url,
-            'Meta Tag Decription': embed.description,
-            // TODO: Add open ai summary here
-          },
-        },
-      ],
-      function (err, records) {
-        if (err) {
-          console.error(err);
-          reject(err);
-        }
-        console.log('Successfully saved', records);
-        resolve(records);
-      }
-    );
-  });
-}
-
-async function saveLinkToAirtable(airtableBase, link) {
-  return new Promise((resolve, reject) => {
-    airtableBase(process.env.AIRTABLE_LINK_AGGRETOR_TABLE_ID).create(
-      [
-        {
-          fields: {
-            Link: link,
+            Link: url,
+            'Meta Tag Decription': description,
           },
         },
       ],
@@ -75,7 +52,6 @@ async function saveLinkToAirtable(airtableBase, link) {
 
 module.exports = {
   extractLinks,
-  saveEmbedToAirtable,
   saveLinkToAirtable,
   getLastAirtableLink,
 };

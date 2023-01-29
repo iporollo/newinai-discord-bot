@@ -1,8 +1,8 @@
 const Airtable = require('airtable');
 const { Client, Events, GatewayIntentBits, Partials } = require('discord.js');
+const { getLinkPreview } = require('link-preview-js');
 const {
   extractLinks,
-  saveEmbedToAirtable,
   saveLinkToAirtable,
   getLastAirtableLink,
 } = require('./utils');
@@ -44,6 +44,8 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
 
   const emoji = reaction.emoji.name;
   const emojiAuthor = user.username;
+  // for testing
+  // if (emoji === '🚀' && emojiAuthor === 'iporollo') {
   if (emoji === '📰' && emojiAuthor === 'iporollo') {
     let lastRecordLink = '';
     const recordsResult = await getLastAirtableLink(airtableBase);
@@ -53,13 +55,15 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
     if (reaction.message.embeds?.length > 0) {
       reaction.message.embeds.forEach(async (embed) => {
         if (!lastRecordLink || lastRecordLink !== embed.link) {
-          await saveEmbedToAirtable(airtableBase, embed);
+          await saveLinkToAirtable(airtableBase, embed.link, embed.description);
         }
       });
     } else {
-      extractLinks(reaction.message.content).forEach(async (link) => {
+      extractLinks(reaction.message.content)?.forEach(async (link) => {
         if (!lastRecordLink || lastRecordLink !== link) {
-          await saveLinkToAirtable(airtableBase, link);
+          const l = await getLinkPreview(link);
+          const description = l?.description || l?.title || '';
+          await saveLinkToAirtable(airtableBase, link, description);
         }
       });
     }
