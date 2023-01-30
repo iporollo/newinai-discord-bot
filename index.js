@@ -46,8 +46,8 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
   const emoji = reaction.emoji.name;
   const emojiAuthor = user.username;
   // for testing
-  if (emoji === '🚀' && emojiAuthor === 'iporollo') {
-    // if (emoji === '📰' && emojiAuthor === 'iporollo') {
+  // if (emoji === '🚀' && emojiAuthor === 'iporollo') {
+  if (emoji === '📰' && emojiAuthor === 'iporollo') {
     let lastRecordLink = '';
     let savedRecords;
     const recordsResult = await getLastAirtableLink(airtableBase);
