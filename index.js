@@ -6,6 +6,7 @@ const {
   saveLinkToAirtable,
   getLastAirtableLink,
 } = require('./utils');
+const fetch = require('node-fetch');
 require('dotenv').config();
 
 Airtable.configure({
@@ -45,27 +46,58 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
   const emoji = reaction.emoji.name;
   const emojiAuthor = user.username;
   // for testing
-  // if (emoji === '🚀' && emojiAuthor === 'iporollo') {
-  if (emoji === '📰' && emojiAuthor === 'iporollo') {
+  if (emoji === '🚀' && emojiAuthor === 'iporollo') {
+    // if (emoji === '📰' && emojiAuthor === 'iporollo') {
     let lastRecordLink = '';
+    let savedRecords;
     const recordsResult = await getLastAirtableLink(airtableBase);
     if (recordsResult?.length > 0) {
       lastRecordLink = recordsResult[0].get('Link');
     }
     if (reaction.message.embeds?.length > 0) {
-      reaction.message.embeds.forEach(async (embed) => {
-        if (!lastRecordLink || lastRecordLink !== embed.link) {
-          await saveLinkToAirtable(airtableBase, embed.link, embed.description);
+      const embeds = reaction.message.embeds;
+      for (let i = 0; i < embeds.length; i++) {
+        if (!lastRecordLink || lastRecordLink !== embeds[i].url) {
+          savedRecords = await saveLinkToAirtable(
+            airtableBase,
+            embeds[i].url,
+            embeds[i].description
+          );
         }
-      });
+      }
     } else {
-      extractLinks(reaction.message.content)?.forEach(async (link) => {
-        if (!lastRecordLink || lastRecordLink !== link) {
-          const l = await getLinkPreview(link);
+      const extractedLinks = extractLinks(reaction.message.content);
+      for (let i = 0; i < extractedLinks.length; i++) {
+        if (!lastRecordLink || lastRecordLink !== extractedLinks[i]) {
+          const l = await getLinkPreview(extractedLinks[i]);
           const description = l?.description || l?.title || '';
-          await saveLinkToAirtable(airtableBase, link, description);
+          savedRecords = await saveLinkToAirtable(
+            airtableBase,
+            extractedLinks[i],
+            description
+          );
         }
-      });
+      }
+    }
+
+    if (savedRecords && savedRecords.length > 0) {
+      try {
+        const savedRecord = savedRecords[0];
+        await fetch(process.env.API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.API_KEY,
+          },
+          body: JSON.stringify({
+            link: savedRecord.get('Link'),
+            description: savedRecord.get('Meta Tag Decription'),
+            airtableRecordId: savedRecord.id,
+          }),
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 });
