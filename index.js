@@ -80,25 +80,25 @@ client.on(Events.MessageReactionAdd, async (reaction, user) => {
       }
     }
 
-    if (savedRecords && savedRecords.length > 0) {
-      try {
-        const savedRecord = savedRecords[0];
-        await fetch(process.env.API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': process.env.API_KEY,
-          },
-          body: JSON.stringify({
-            link: savedRecord.get('Link'),
-            description: savedRecord.get('Meta Tag Decription'),
-            airtableRecordId: savedRecord.id,
-          }),
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    }
+    // if (savedRecords && savedRecords.length > 0) {
+    //   try {
+    //     const savedRecord = savedRecords[0];
+    //     await fetch(process.env.API_URL, {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'x-api-key': process.env.API_KEY,
+    //       },
+    //       body: JSON.stringify({
+    //         link: savedRecord.get('Link'),
+    //         description: savedRecord.get('Meta Tag Decription'),
+    //         airtableRecordId: savedRecord.id,
+    //       }),
+    //     });
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // }
   }
 });
 
